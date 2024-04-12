@@ -13,13 +13,18 @@ import {
 } from 'react-native-responsive-screen';
 import Features from '../components/features';
 import {dummyMessages} from '../constants';
-import Voice, { SpeechErrorEvent, SpeechRecognizedEvent, SpeechResultsEvent } from '@react-native-community/voice';
-
+import Voice, {
+  SpeechErrorEvent,
+  SpeechRecognizedEvent,
+  SpeechResultsEvent,
+} from '@react-native-community/voice';
 
 const HomeScreen = () => {
   const [messages, setMessages] = useState(dummyMessages);
   const [recording, setRecording] = useState(false);
   const [speaking, setSpeaking] = useState(true);
+  const [result, setResult] = useState('');
+
   const clear = () => {
     setMessages([]);
   };
@@ -32,17 +37,18 @@ const HomeScreen = () => {
     console.log('speech start handler');
   };
 
-  const speechRecognizedHandler = (e: SpeechRecognizedEvent) => {
-    console.log('speech start handler');
-  };
+  // const speechRecognizedHandler = (e: SpeechRecognizedEvent) => {
+  //   console.log('speech start handler');
+  // };
 
   const speechEndHandler = (e: any) => {
     setRecording(false);
     console.log('speech end handler');
   };
 
-  const speechResultsHandler = (e: SpeechResultsEvent) => {
+  const speechResultsHandler = (e: any) => {
     console.log('voice event', e);
+    setResult(e.value[0]);
   };
 
   const speechErrorHandler = (e: SpeechErrorEvent) => {
@@ -66,14 +72,20 @@ const HomeScreen = () => {
       console.log('error', error);
     }
   };
-  
+
   useEffect(() => {
     Voice.onSpeechStart = speechStartHandler;
-    Voice.onSpeechRecognized = speechRecognizedHandler;
+    // Voice.onSpeechRecognized = speechRecognizedHandler;
     Voice.onSpeechEnd = speechEndHandler;
     Voice.onSpeechResults = speechResultsHandler;
     Voice.onSpeechError = speechErrorHandler;
+
+    // return () => {
+    //   Voice.destroy().then(Voice.removeAllListeners);
+    // };
   });
+
+  console.log('Result:', result);
   return (
     <View className="flex-1 bg-white">
       <SafeAreaView className="flex-1 flex mx-5">
@@ -146,7 +158,7 @@ const HomeScreen = () => {
         {/* Record, clear and dtop buttons */}
         <View className="flex justify-center items-center">
           {recording ? (
-            <TouchableOpacity>
+            <TouchableOpacity onPress={stopRecording}>
               <Image
                 className="rounded-full"
                 source={require('../../assets/images/Animation-1712086581855.gif')}
@@ -154,7 +166,7 @@ const HomeScreen = () => {
               />
             </TouchableOpacity>
           ) : (
-            <TouchableOpacity>
+            <TouchableOpacity onPress={startRecording}>
               <Image
                 className="rounded-full"
                 source={require('../../assets/images/icons8-microphone-64.png')}
