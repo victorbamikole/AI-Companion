@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {APIKEY} from '../../src/constants/';
+import {APIKEY} from '../../keys';
 
 const client = axios.create({
   headers: {
